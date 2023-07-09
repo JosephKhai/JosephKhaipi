@@ -1,6 +1,7 @@
 ﻿using JosephKhaipi.Web.Data;
 using JosephKhaipi.Web.Models.Domain;
 using JosephKhaipi.Web.Models.ViewModels;
+using JosephKhaipi.Web.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,11 +9,11 @@ namespace JosephKhaipi.Web.Controllers
 {
     public class AdminTagsController : Controller
     {
-        private readonly JosephKhaiDbContext _context;
+        private readonly ITagRepository _tagRepository;
 
-        public AdminTagsController(JosephKhaiDbContext context)
+        public AdminTagsController(ITagRepository tagRepository)
         {
-            _context = context;
+            _tagRepository = tagRepository;
         }
 
         [HttpGet]
@@ -32,9 +33,7 @@ namespace JosephKhaipi.Web.Controllers
                 DisplayName = addTagRequest.DisplayName,
             };
 
-            await _context.Tags.AddAsync(tag);
-
-            await _context.SaveChangesAsync();
+            await _tagRepository.AddAsync(tag);
 
             return RedirectToAction("List");
         
@@ -44,22 +43,17 @@ namespace JosephKhaipi.Web.Controllers
         [ActionName("List")]
         public async Task<IActionResult> List()
         {
-
             // use dbContext to read the Tags
-            var tags = await _context.Tags.ToListAsync();
-
+            var tag = await _tagRepository.GetAllAsync();
             
-            return View(tags);
+            return View(tag);
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            //1st method
-            //var tag = _context.Tags.Find(id);
-
-            //2nd method
-            var tag = await _context.Tags.FirstOrDefaultAsync(x => x.Id == id);
+            
+           var tag = await _tagRepository.GetAsync(id);
 
             if(tag != null)
             {
@@ -85,36 +79,28 @@ namespace JosephKhaipi.Web.Controllers
                 DisplayName = editTagRequest.DisplayName,
             };
 
-            var existingTag = await _context.Tags.FindAsync(tag.Id);
+            var updatedTag = await _tagRepository.UpdateAsync(tag);
 
-            if(existingTag != null)
+            if(updatedTag != null)
             {
-                existingTag.Name = tag.Name;
-                existingTag.DisplayName = tag.DisplayName;
-
-                await _context.SaveChangesAsync();
-
                 //show success notification
-                return RedirectToAction("Edit", new { id = editTagRequest.Id });
-                //return RedirectToAction("List");
             }
-           
-            //show error notification
-            return RedirectToAction("Edit", new { id = editTagRequest.Id });
+            else
+            {
+                //show error notification
+            }
 
-            
+            return RedirectToAction("Edit", new { id = editTagRequest.Id });
+ 
         }
 
         [HttpPost]
         public async Task<IActionResult> Delete(EditTagRequest editTagRequest)
         {
-            var existingTag = await _context.Tags.FindAsync(editTagRequest.Id);
+            var deleteTag = await _tagRepository.DeleteAsync(editTagRequest.Id);
 
-            if(existingTag != null)
+            if(deleteTag != null)
             {
-                _context.Tags.Remove(existingTag);
-                await _context.SaveChangesAsync();
-
                 //show a success notification
                 return RedirectToAction("List");
             }

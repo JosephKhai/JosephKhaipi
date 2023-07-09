@@ -1,4 +1,5 @@
 using JosephKhaipi.Web.Data;
+using JosephKhaipi.Web.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<JosephKhaiDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("JosephKhaiDbConnectionString")));
+
+builder.Services.AddScoped<ITagRepository, TagRepository>();
 
 var app = builder.Build();
 
