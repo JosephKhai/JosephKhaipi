@@ -2,6 +2,7 @@
 using JosephKhaipi.Web.Models.Domain;
 using JosephKhaipi.Web.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace JosephKhaipi.Web.Controllers
 {
@@ -22,7 +23,7 @@ namespace JosephKhaipi.Web.Controllers
 
         [HttpPost]
         [ActionName("Add")]
-        public IActionResult Add(AddTagRequest addTagRequest)
+        public async Task<IActionResult> Add(AddTagRequest addTagRequest)
         {
             //Mapping AddTagRequest to Tag domain model
             var tag = new Tag
@@ -31,9 +32,9 @@ namespace JosephKhaipi.Web.Controllers
                 DisplayName = addTagRequest.DisplayName,
             };
 
-            _context.Tags.Add(tag);
+            await _context.Tags.AddAsync(tag);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return RedirectToAction("List");
         
@@ -41,24 +42,24 @@ namespace JosephKhaipi.Web.Controllers
 
         [HttpGet]
         [ActionName("List")]
-        public IActionResult List()
+        public async Task<IActionResult> List()
         {
 
             // use dbContext to read the Tags
-            var tags = _context.Tags.ToList();
+            var tags = await _context.Tags.ToListAsync();
 
-
+            
             return View(tags);
         }
 
         [HttpGet]
-        public IActionResult Edit(Guid id)
+        public async Task<IActionResult> Edit(Guid id)
         {
             //1st method
             //var tag = _context.Tags.Find(id);
 
             //2nd method
-            var tag = _context.Tags.FirstOrDefault(x => x.Id == id);
+            var tag = await _context.Tags.FirstOrDefaultAsync(x => x.Id == id);
 
             if(tag != null)
             {
@@ -75,7 +76,7 @@ namespace JosephKhaipi.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(EditTagRequest editTagRequest)
+        public async Task<IActionResult> Edit(EditTagRequest editTagRequest)
         {
             var tag = new Tag
             {
@@ -84,14 +85,14 @@ namespace JosephKhaipi.Web.Controllers
                 DisplayName = editTagRequest.DisplayName,
             };
 
-            var existingTag =  _context.Tags.Find(tag.Id);
+            var existingTag = await _context.Tags.FindAsync(tag.Id);
 
             if(existingTag != null)
             {
                 existingTag.Name = tag.Name;
                 existingTag.DisplayName = tag.DisplayName;
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 //show success notification
                 return RedirectToAction("Edit", new { id = editTagRequest.Id });
@@ -105,14 +106,14 @@ namespace JosephKhaipi.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(EditTagRequest editTagRequest)
+        public async Task<IActionResult> Delete(EditTagRequest editTagRequest)
         {
-            var existingTag = _context.Tags.Find(editTagRequest.Id);
+            var existingTag = await _context.Tags.FindAsync(editTagRequest.Id);
 
             if(existingTag != null)
             {
                 _context.Tags.Remove(existingTag);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 //show a success notification
                 return RedirectToAction("List");
