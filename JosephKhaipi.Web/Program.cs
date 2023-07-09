@@ -10,6 +10,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<JosephKhaiDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("JosephKhaiDbConnectionString")));
 
 builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
 
 var app = builder.Build();
 

@@ -1,8 +1,9 @@
-﻿namespace JosephKhaipi.Web.Models.Domain
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace JosephKhaipi.Web.Models.ViewModels
 {
-    public class BlogPost
+    public class AddBlogPostRequest
     {
-        public Guid Id { get; set; }
         public string Heading { get; set; }
         public string PageTitle { get; set; }
         public string Content { get; set; }
@@ -13,8 +14,8 @@
         public string Author { get; set; }
         public bool Visible { get; set; }
 
-        //Navigation property
-        public ICollection<Tag> Tags { get; set; }
-
+        //display tags
+        public IEnumerable<SelectListItem> Tags { get; set; }
+        public string[] SelectedTag { get; set; } = Array.Empty<string>();
     }
 }
