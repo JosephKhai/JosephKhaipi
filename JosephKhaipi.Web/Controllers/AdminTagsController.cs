@@ -73,5 +73,53 @@ namespace JosephKhaipi.Web.Controllers
 
             return View(null);
         }
+
+        [HttpPost]
+        public IActionResult Edit(EditTagRequest editTagRequest)
+        {
+            var tag = new Tag
+            {
+                Id = editTagRequest.Id,
+                Name = editTagRequest.Name,
+                DisplayName = editTagRequest.DisplayName,
+            };
+
+            var existingTag =  _context.Tags.Find(tag.Id);
+
+            if(existingTag != null)
+            {
+                existingTag.Name = tag.Name;
+                existingTag.DisplayName = tag.DisplayName;
+
+                _context.SaveChanges();
+
+                //show success notification
+                return RedirectToAction("Edit", new { id = editTagRequest.Id });
+                //return RedirectToAction("List");
+            }
+           
+            //show error notification
+            return RedirectToAction("Edit", new { id = editTagRequest.Id });
+
+            
+        }
+
+        [HttpPost]
+        public IActionResult Delete(EditTagRequest editTagRequest)
+        {
+            var existingTag = _context.Tags.Find(editTagRequest.Id);
+
+            if(existingTag != null)
+            {
+                _context.Tags.Remove(existingTag);
+                _context.SaveChanges();
+
+                //show a success notification
+                return RedirectToAction("List");
+            }
+
+            //show an error notification
+            return RedirectToAction("Edit", new { id = editTagRequest.Id});
+        }
     }
 }
