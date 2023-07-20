@@ -1,4 +1,6 @@
 ﻿using JosephKhaipi.Web.Models;
+using JosephKhaipi.Web.Models.ViewModels;
+using JosephKhaipi.Web.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -7,15 +9,33 @@ namespace JosephKhaipi.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IBlogPostRepository _blogPostRepository;
+        private readonly ITagRepository _tagRepository;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, 
+            IBlogPostRepository blogPostRepository,
+            ITagRepository tagRepository)
         {
             _logger = logger;
+            _blogPostRepository = blogPostRepository;
+            _tagRepository = tagRepository;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            //getting all blogs
+            var blogPosts =  await _blogPostRepository.GetAllAsync();
+
+            //get all tags
+            var tag = await _tagRepository.GetAllAsync();
+
+            var model = new HomeViewModel
+            {
+                BlogPosts = blogPosts,
+                Tags = tag
+            };
+
+            return View(model);
         }
 
         public IActionResult Privacy()

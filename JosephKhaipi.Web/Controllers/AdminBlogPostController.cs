@@ -1,11 +1,13 @@
 ﻿using JosephKhaipi.Web.Models.Domain;
 using JosephKhaipi.Web.Models.ViewModels;
 using JosephKhaipi.Web.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace JosephKhaipi.Web.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminBlogPostController : Controller
     {
         private readonly ITagRepository _tagRepository;

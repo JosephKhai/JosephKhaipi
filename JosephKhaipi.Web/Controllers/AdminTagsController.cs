@@ -2,11 +2,13 @@
 using JosephKhaipi.Web.Models.Domain;
 using JosephKhaipi.Web.Models.ViewModels;
 using JosephKhaipi.Web.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace JosephKhaipi.Web.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminTagsController : Controller
     {
         private readonly ITagRepository _tagRepository;
@@ -16,6 +18,7 @@ namespace JosephKhaipi.Web.Controllers
             _tagRepository = tagRepository;
         }
 
+        
         [HttpGet]
         public IActionResult Add()
         {
@@ -69,6 +72,7 @@ namespace JosephKhaipi.Web.Controllers
             return View(null);
         }
 
+
         [HttpPost]
         public async Task<IActionResult> Edit(EditTagRequest editTagRequest)
         {
@@ -94,6 +98,7 @@ namespace JosephKhaipi.Web.Controllers
  
         }
 
+  
         [HttpPost]
         public async Task<IActionResult> Delete(EditTagRequest editTagRequest)
         {
