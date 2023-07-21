@@ -24,29 +24,34 @@ namespace JosephKhaipi.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
         {
-            var identityUser = new IdentityUser
+            if (ModelState.IsValid)
             {
-                UserName = registerViewModel.UserName,
-                Email = registerViewModel.Email,
-
-            };
-            var identityResult = await _userManager.CreateAsync(identityUser, registerViewModel.Password);
-
-            if (identityResult.Succeeded)
-            {
-                //assign this user the "User" role
-                var roleIdentityResult = await _userManager.AddToRoleAsync(identityUser, "User");
-
-                if (roleIdentityResult.Succeeded)
+                var identityUser = new IdentityUser
                 {
-                    //show success notification
-                    return RedirectToAction("Register");
-                }
+                    UserName = registerViewModel.UserName,
+                    Email = registerViewModel.Email,
 
+                };
+                var identityResult = await _userManager.CreateAsync(identityUser, registerViewModel.Password);
+
+                if (identityResult.Succeeded)
+                {
+                    //assign this user the "User" role
+                    var roleIdentityResult = await _userManager.AddToRoleAsync(identityUser, "User");
+
+                    if (roleIdentityResult.Succeeded)
+                    {
+                        //show success notification
+                        return RedirectToAction("Register");
+                    }
+
+                }
             }
 
+
+
             //show error notification
-            return RedirectToAction("Register");
+            return View();
 
         }
 
@@ -62,20 +67,24 @@ namespace JosephKhaipi.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login (LoginViewModel loginViewModel)
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
-
-            var signInResult = await _signInManager.PasswordSignInAsync(loginViewModel.UserName, loginViewModel.Password, false, false);
-
-            if(signInResult != null && signInResult.Succeeded)
+            if (ModelState.IsValid)
             {
-                if(!string.IsNullOrWhiteSpace(loginViewModel.ReturnUrl))
-                {
-                    return Redirect(loginViewModel.ReturnUrl);
-                }
 
-                return RedirectToAction("Index", "Home");
+                var signInResult = await _signInManager.PasswordSignInAsync(loginViewModel.UserName, loginViewModel.Password, false, false);
+
+                if (signInResult != null && signInResult.Succeeded)
+                {
+                    if (!string.IsNullOrWhiteSpace(loginViewModel.ReturnUrl))
+                    {
+                        return Redirect(loginViewModel.ReturnUrl);
+                    }
+
+                    return RedirectToAction("Index", "Home");
+                }
             }
+
 
             //show errors
             return View();

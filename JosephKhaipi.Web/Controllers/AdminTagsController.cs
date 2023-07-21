@@ -18,7 +18,7 @@ namespace JosephKhaipi.Web.Controllers
             _tagRepository = tagRepository;
         }
 
-        
+
         [HttpGet]
         public IActionResult Add()
         {
@@ -29,6 +29,15 @@ namespace JosephKhaipi.Web.Controllers
         [ActionName("Add")]
         public async Task<IActionResult> Add(AddTagRequest addTagRequest)
         {
+            ValidateAddTagRequest(addTagRequest);
+
+
+            if (ModelState.IsValid ==  false)
+            {
+                return View();
+
+            }
+
             //Mapping AddTagRequest to Tag domain model
             var tag = new Tag
             {
@@ -39,7 +48,7 @@ namespace JosephKhaipi.Web.Controllers
             await _tagRepository.AddAsync(tag);
 
             return RedirectToAction("List");
-        
+
         }
 
         [HttpGet]
@@ -48,17 +57,17 @@ namespace JosephKhaipi.Web.Controllers
         {
             // use dbContext to read the Tags
             var tag = await _tagRepository.GetAllAsync();
-            
+
             return View(tag);
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            
-           var tag = await _tagRepository.GetAsync(id);
 
-            if(tag != null)
+            var tag = await _tagRepository.GetAsync(id);
+
+            if (tag != null)
             {
                 var ediTagRequest = new EditTagRequest
                 {
@@ -85,7 +94,7 @@ namespace JosephKhaipi.Web.Controllers
 
             var updatedTag = await _tagRepository.UpdateAsync(tag);
 
-            if(updatedTag != null)
+            if (updatedTag != null)
             {
                 //show success notification
             }
@@ -95,23 +104,34 @@ namespace JosephKhaipi.Web.Controllers
             }
 
             return RedirectToAction("Edit", new { id = editTagRequest.Id });
- 
+
         }
 
-  
+
         [HttpPost]
         public async Task<IActionResult> Delete(EditTagRequest editTagRequest)
         {
             var deleteTag = await _tagRepository.DeleteAsync(editTagRequest.Id);
 
-            if(deleteTag != null)
+            if (deleteTag != null)
             {
                 //show a success notification
                 return RedirectToAction("List");
             }
 
             //show an error notification
-            return RedirectToAction("Edit", new { id = editTagRequest.Id});
+            return RedirectToAction("Edit", new { id = editTagRequest.Id });
+        }
+
+        private void ValidateAddTagRequest(AddTagRequest addTagRequest)
+        {
+            if (addTagRequest.Name != null && addTagRequest.DisplayName != null)
+            {
+                if(addTagRequest.Name == addTagRequest.DisplayName)
+                {
+                    ModelState.AddModelError("DisplayName", "Name cannot be the same as Display name");
+                }
+            }
         }
     }
 }

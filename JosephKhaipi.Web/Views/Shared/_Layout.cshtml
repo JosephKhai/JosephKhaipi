@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - JosephKhaipi.Web</title>
+    <title>@ViewData["Title"] JosephKhaipi.Web</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/JosephKhaipi.Web.styles.css" asp-append-version="true" />
@@ -62,6 +62,12 @@
                                            asp-area=""
                                            asp-controller="AdminBlogPost"
                                            asp-action="List">All Blog Post</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-area=""
+                                           asp-controller="AdminUser"
+                                           asp-action="List">All Users</a>
                                     </li>
                                 </ul>
                             </li>
